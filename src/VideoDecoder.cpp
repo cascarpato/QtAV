@@ -77,8 +77,16 @@ bool VideoDecoder::decode(const QByteArray &encoded)
     if (!d.got_frame_ptr) {
         qWarning("no frame could be decompressed: %s", av_err2str(ret));
         return false;
-    }
-
+    }/*
+    if (d.frame->pict_type == AV_PICTURE_TYPE_I) {
+        qDebug("pitc I : %d", d.frame->key_frame);
+    } else if (d.frame->pict_type == AV_PICTURE_TYPE_P) {
+        qDebug("pitc P : %d", d.frame->key_frame);
+    } else if (d.frame->pict_type == AV_PICTURE_TYPE_B) {
+        qDebug("pitc B : %d", d.frame->key_frame);
+    } else {
+        qDebug("pitc %d : %d", d.frame->pict_type, d.frame->key_frame);
+    }*/
     if (d.width <= 0 || d.height <= 0) {
         qDebug("decoded video size not seted. use original size [%d x %d]"
             , d.codec_ctx->width, d.codec_ctx->height);
@@ -86,6 +94,7 @@ bool VideoDecoder::decode(const QByteArray &encoded)
             return false;
         resizeVideo(d.codec_ctx->width, d.codec_ctx->height);
     }
+    d.conv->setInterlaced(d.frame->interlaced_frame);
     //If not YUV420P or ImageConverter supported format pair, convert to YUV420P first. or directly convert to RGB?(no hwa)
     //TODO: move convertion out. decoder only do some decoding
     //if not yuv420p or conv supported convertion pair(in/out), convert to yuv420p first using ff, then use other yuv2rgb converter

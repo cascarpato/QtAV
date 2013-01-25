@@ -83,6 +83,7 @@ void AVDemuxThread::seek(qreal pos)
         pause(true);
         video_thread->pause(true);
     }
+    qDebug("demuxing thread seek end");
 }
 
 void AVDemuxThread::seekForward()
@@ -91,11 +92,14 @@ void AVDemuxThread::seekForward()
     if (!buffer_mutex.tryLock()) {
         buffer_mutex.unlock(); //may be still blocking in demux thread
         buffer_mutex.lock();
+        qDebug("demuxing thread tryLock %d", __LINE__);
     }
     audio_thread->packetQueue()->clear();
     video_thread->packetQueue()->clear();
     demuxer->seekForward();
+    qDebug("demuxing thread seek end %d", __LINE__);
     buffer_mutex.unlock();
+    qDebug("demuxing thread seek end %d", __LINE__);
     if (isPaused()) {
         pause(false);
         video_thread->pause(false);
@@ -105,6 +109,7 @@ void AVDemuxThread::seekForward()
         pause(true);
         video_thread->pause(true);
     }
+    qDebug("demuxing thread seek end %d", __LINE__);
 }
 
 void AVDemuxThread::seekBackward()
@@ -127,6 +132,7 @@ void AVDemuxThread::seekBackward()
         pause(true);
         video_thread->pause(true);
     }
+    qDebug("demuxing thread seek end");
 }
 
 bool AVDemuxThread::isPaused() const
